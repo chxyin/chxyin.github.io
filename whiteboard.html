@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek Whiteboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        @keyframes rain {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 200px;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('./images/bg.png') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.8);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.93), rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 60px 70px, rgba(255,255,255,0.93), rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 50px 50px, rgba(255,255,255,0.93), rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.93), rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 90px 10px, rgba(255,255,255,0.93), rgba(255,255,255,0)),
+                radial-gradient(1px 1px at 110px 150px, rgba(255,255,255,0.93), rgba(255,255,255,0)),
+                radial-gradient(2px 2px at 40px 120px, rgba(255,255,255,0.93), rgba(255,255,255,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            background-position: 0 0;
+            animation: rain 2.2s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .nav-top {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            color: white; /* Set button text color to white */
+            cursor: pointer;
+            font-size: 16px; /* Set consistent text size */
+            font-weight: 100; /* Ultra thin font */
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn.active {
+            color: white; /* Remove highlighting for active button */
+            background: none; /* Remove background color for active button */
+        }
+
+        .nav-btn:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            z-index: 10;
+            gap: 20px;
+        }
+
+        .whiteboard-mode {
+            flex: 1;
+            flex-direction: row;
+            gap: 0;
+            width: calc(100% - 250px);
+            margin: 80px 125px 75px 125px;
+            position: relative;
+            display: flex;
+        }
+
+        .whiteboard-mode::after {
+            content: '';
+            position: absolute;
+            left: 35%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 5;
+        }
+
+        .explanation-panel {
+            flex: 0 0 35%;
+            background: transparent;
+            border-radius: 0;
+            padding: 40px 30px;
+            margin-left: 100px;
+            overflow-y: auto;
+            box-shadow: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .explanation-panel h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .explanation-panel p {
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .whiteboard-panel {
+            flex: 0 0 65%;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .whiteboard-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 0;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            height: calc(100vh - 160px);
+            background: rgba(255, 255, 255, 0.7);
+            transition: all 0.54s ease;
+            z-index: 100;
+            overflow: hidden;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.left {
+            left: -250px;
+            border-radius: 0 20px 20px 0;
+        }
+
+        .sidebar.right {
+            right: -250px;
+            left: auto;
+            border-radius: 20px 0 0 20px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar.right.open {
+            right: 0;
+            left: auto;
+        }
+
+        .sidebar-content h3 {
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar-content ul {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+            padding-left: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db #f3f4f6;
+        }
+
+        .sidebar-content ul::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar-content ul::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 10px;
+        }
+
+        .sidebar-content ul::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+
+        .sidebar-content ul::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        .sidebar-content li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-content li button {
+            width: 100%;
+            padding: 10px;
+            text-align: left;
+            background: rgba(243, 244, 246, 0.55);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .sidebar-content li button:hover {
+            background: rgba(229, 231, 235, 0.55);
+        }
+
+        .vertical-bar {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            z-index: 99;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .vertical-bar-item {
+            width: 25px;
+            height: 25px;
+            background: transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: none;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .vertical-bar-item:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+        }
+
+        .vertical-bar-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-top">
+        <a href="main.html" class="nav-btn">Main</a>
+        <a href="chatbot.html" class="nav-btn">Chatbot</a>
+        <a href="whiteboard.html" class="nav-btn active">Whiteboard</a>
+    </div>
+
+    <div class="container">
+        <div class="whiteboard-mode">
+            <div class="explanation-panel">
+                <h2>Explanation</h2>
+                <p>Mathematics explanations and step-by-step solutions will appear here.</p>
+                <p>Use the whiteboard on the right to visualize problems and concepts.</p>
+            </div>
+            <div class="whiteboard-panel">
+                <canvas class="whiteboard-canvas" id="whiteboardCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="sidebar-left" class="sidebar left">
+        <div class="sidebar-content">
+            <h3>Chat History</h3>
+            <ul id="chat-history-list">
+                <!-- Chat history items will be populated here -->
+            </ul>
+        </div>
+    </div>
+
+    <div id="sidebar-right" class="sidebar right">
+        <div class="sidebar-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 0;">Settings</h3>
+            </div>
+            <ul id="settings-list" style="list-style: none;">
+                <!-- Settings items will be populated here -->
+                <li style="margin-bottom: 12px;"><button style="width: 100%; padding: 10px; background: rgba(243, 244, 246, 0.55); border: none; border-radius: 8px; cursor: pointer; color: #374151; font-weight: 500; font-size: 13px; transition: all 0.2s ease;" title="Theme settings">Dark Mode</button></li>
+                <li style="margin-bottom: 12px;"><button style="width: 100%; padding: 10px; background: rgba(243, 244, 246, 0.55); border: none; border-radius: 8px; cursor: pointer; color: #374151; font-weight: 500; font-size: 13px; transition: all 0.2s ease;" title="Preferences">Preferences</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="vertical-bar" class="vertical-bar" title="Right Preview">
+        <div class="vertical-bar-item" data-section="settings" title="Settings"><img src="images/adjustments.png" alt="Settings" style="width: 100%; height: 100%; object-fit: contain;"></div>
+    </div>
+
+    <script>
+        function initWhiteboard() {
+            const canvas = document.getElementById('whiteboardCanvas');
+            if (!canvas.getContext) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            let isDrawing = false;
+            
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#000';
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            });
+        }
+
+        // Initialize whiteboard on page load
+        window.addEventListener('load', initWhiteboard);
+
+        const sidebarLeft = document.getElementById('sidebar-left');
+        const sidebarRight = document.getElementById('sidebar-right');
+        const triggerZone = 100;
+        let sidebarLeftClickedOpen = false;
+        let sidebarCooldown = false;
+        let debounceTimer;
+
+        // Sample chat history
+        const chatHistoryData = [
+            '[test]',
+            'Previous question',
+            'Another conversation',
+            'Deep learning basics',
+            'API integration',
+            'Web development',
+            'JavaScript tips'
+        ];
+
+        const chatHistoryList = document.getElementById('chat-history-list');
+        chatHistoryData.forEach(item => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.style.padding = '10px';
+            btn.style.textAlign = 'left';
+            btn.style.backgroundColor = 'rgba(243, 244, 246, 0.55)';
+            btn.style.border = 'none';
+            btn.style.borderRadius = '8px';
+            btn.style.fontSize = '13px';
+            btn.style.color = '#374151';
+            btn.style.cursor = 'pointer';
+            btn.style.transition = 'all 0.2s ease';
+            btn.style.fontFamily = 'inherit';
+            btn.style.fontWeight = '500';
+            btn.addEventListener('mouseenter', () => {
+                btn.style.backgroundColor = 'rgba(229, 231, 235, 0.55)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.backgroundColor = 'rgba(243, 244, 246, 0.55)';
+                btn.style.borderColor = '#e5e7eb';
+            });
+            btn.addEventListener('click', () => {
+                console.log('Chat selected:', item);
+                // Close sidebar when a chat is selected
+                sidebarLeft.classList.remove('open');
+                sidebarLeftClickedOpen = false;
+                // Set cooldown to prevent immediate reopening
+                sidebarCooldown = true;
+                setTimeout(() => { sidebarCooldown = false; }, 500);
+            });
+            btn.textContent = item;
+            li.appendChild(btn);
+            chatHistoryList.appendChild(li);
+        });
+
+        // Hover trigger zone for left sidebar
+        function handleMouseMove(e) {
+            debounceTimer = setTimeout(() => {
+                if (e.clientX <= triggerZone && !sidebarLeftClickedOpen && !sidebarCooldown) {
+                    sidebarLeft.classList.add('open');
+                } else if (e.clientX > triggerZone && !sidebarLeftClickedOpen) {
+                    sidebarLeft.classList.remove('open');
+                }
+            }, 50);
+        }
+
+        document.addEventListener('mousemove', handleMouseMove);
+
+        sidebarLeft.addEventListener('mouseenter', () => {
+            clearTimeout(debounceTimer);
+        });
+
+        sidebarLeft.addEventListener('mouseleave', () => {
+            if (!sidebarLeftClickedOpen) {
+                sidebarLeft.classList.remove('open');
+            }
+        });
+
+        sidebarLeft.addEventListener('click', (e) => {
+            // Only keep open if clicking on non-button parts of the interface
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                sidebarLeftClickedOpen = true;
+            }
+        });
+
+        // Close left sidebar when clicking outside
+        document.addEventListener('click', (e) => {
+            if (sidebarLeftClickedOpen) {
+                if (!sidebarLeft.contains(e.target)) {
+                    sidebarLeft.classList.remove('open');
+                    sidebarLeftClickedOpen = false;
+                }
+            } else {
+                if (!sidebarLeft.contains(e.target) && e.clientX >= triggerZone) {
+                    sidebarLeft.classList.remove('open');
+                }
+            }
+        });
+
+        // Vertical bar functionality
+        const verticalBarItems = document.querySelectorAll('.vertical-bar-item');
+        const verticalBar = document.getElementById('vertical-bar');
+
+        verticalBarItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                sidebarRight.classList.toggle('open');
+            });
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!sidebarRight.contains(e.target) && !verticalBar.contains(e.target)) {
+                sidebarRight.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
