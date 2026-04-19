@@ -1,0 +1,212 @@
+/*headertop*/
+#header{
+	background-color: rgba(18, 7, 54, 0.5);
+	margin-top: -28px;
+	padding-top: 35px;
+	
+	margin-left: -10px;
+	padding-left: 20px;
+	
+	margin-right: -10px;
+	padding-right: 40px;
+	}
+	
+	#headercenter{
+		text-align: left;
+	}
+	
+	#bg1{
+		background-image: url('Background\ 1.png');
+		background-size:105%;
+		background-position-y: -30px;
+		background-position-x: -55px;
+		background-attachment: fixed;
+	}
+	
+	#bg2{
+		background-image: url('Background\ 2.jpg');
+		background-repeat: repeat;
+		background-size:100%;
+		background-attachment: fixed;
+	}
+	
+	#bg3{
+		background-image: url('Background3.png');
+		background-repeat: repeat;
+		background-size:contain;
+		background-attachment: fixed;
+	}
+	
+	#home{
+		background-image: url('background\ 4.png');
+		background-repeat: repeat;
+		background-size:contain;
+		background-attachment: fixed;
+	}
+	
+	
+	#headermenu{
+		font-family: "Comfortaa";
+		src: url(Comfortaa-Bold.ttf);
+		display: inline-table;
+		width: 930px;
+		float: right;
+		text-align: right;
+	}
+	#headermenu ul{
+		float: right;
+		color: white;
+		list-style-type:none;
+		padding:1px;
+		margin-bottom:0px;
+		text-align:right;
+		font-size: 15px;
+	}
+	#headermenu li{
+		color:inherit;
+		display:inline-block;
+		margin:0px 15px;
+		padding-top:0px;
+	}
+	
+	
+	#links{
+		color: white;
+		text-decoration: none;
+	}
+	
+	/*lowerheader*/
+	#headerdivline{
+		background-color:rgb(255, 255, 255);
+		width: 100%;
+		height: 1px;
+		
+		margin-left: -25px;
+		padding-left: 30px;
+		
+		margin-right: -10px;
+		padding-right: 35px;
+	}
+	#headerlinetext{
+		width: 100%;
+		height: 20px;
+		font-family: "Comfortaa";
+		src: url("Comfortaa-Bold.ttf");
+		font-size: 13px;
+		color: white;
+		text-align: left;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		padding-right: 40px;
+	}
+	
+	
+	
+	
+	
+	video{
+		margin: 45px;
+		margin-top: 20px;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/* background*/
+	#background {
+		position: fixed;
+		right: 10px;
+		bottom: 10px;
+		min-width: 100%;
+		min-height: 100%;
+		z-index: -1;
+	  }
+	
+	#my-video {
+		display: block;
+		min-width: 100%;
+		min-height: 100%;
+		object-fit: cover;
+	  }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	  /*content*/
+	#maincontent{
+		font-family: "Comfortaa";
+		src: url("Comfortaa-Bold.ttf");
+		border-radius: 25px;
+		background-color: rgba(12, 0, 53, 0.65);
+		padding:16px 0px;
+		color:#ffffff;
+		font-size:14px;
+		line-height:1.5;
+	}
+	
+	#Cover{
+		display:inline-block;
+		width:200px;
+		height:200px;
+		text-align:center;
+	}
+	
+	#Title1{
+		display:inline-block;
+		width:470px;
+		padding-left:20px;
+		vertical-align:top;
+		font-size:14px;
+		line-height:1.6;
+	}
+	
+	#headers{
+		font-size: 30px;
+	}
+	#lowerheader{
+		font-size: 26px;
+		margin-bottom: 0px;
+	}
+	
+	/*effects*/
+	#Links1 a:hover{
+		background-color: rgb(31, 19, 84);
+	}
+	
+	#downloads:hover{
+	background-color: rgb(48, 14, 80);
+	}
+	
+	
+	#downloads{
+		margin-left: 30px;
+		margin-right: 30px;
+		margin-bottom: 10px;
+		margin-top: 10px;
+		padding: 5px;
+		padding-top: 18px;
+		padding-bottom: 15px;
+		border-radius: 25px;
+		background-color: rgba(48, 9, 90, 0.91);
+	}
+	#btn{
+		font-size: 15px;
+		align: center;
+		margin-left: 35px;
+		color: white; 
+		text-decoration: none; 
+		align-self: center;
+	}
